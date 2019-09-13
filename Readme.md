@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Митрофанова](https://up.htmlacademy.ru/javascript/18/user/179338).
-* Наставник: `Неизвестно`.
+* Наставник: [Владислав Пинчук](https://up.htmlacademy.ru/javascript/18/user/1172341).
 
 ---
 
