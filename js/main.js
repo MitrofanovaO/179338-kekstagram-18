@@ -1,4 +1,5 @@
 'use strict';
+
 var PHOTOS_QUANTITY = 25;
 var AVATAR_QUANTITY = 6;
 var MIN_LIKE = 15;
