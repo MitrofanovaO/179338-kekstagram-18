@@ -33,13 +33,11 @@ var SCALE_OPTIONS = {
 };
 
 var uploadFileElement = document.querySelector('input[id="upload-file"]');
-var scaleSmaller = document.querySelector('.scale__control--smaller');
-var scaleBigger = document.querySelector('.scale__control--bigger');
+var uploadScale = document.querySelector('.img-upload__scale');
 var scaleValue = document.querySelector('.scale__control--value');
 var imgUploadPreview = document.querySelector('.img-upload__preview img');
 var uploadFileOverlay = document.querySelector('.img-upload__overlay');
 var uploadFileCancel = document.querySelector('.img-upload__cancel');
-var effectLevelPin = document.querySelector('.effect-level__pin');
 var effectLevelValue = document.querySelector('.effect-level__value');
 var effectOriginal = document.querySelector('input[id="effect-none"]');
 var effectChrome = document.querySelector('input[id="effect-chrome"]');
@@ -141,28 +139,18 @@ fillPicturePopup(picturePopupElement, photoArr[0]);
 picturePopupElement.querySelector('.social__comment-count').classList.add('visually-hidden');
 picturePopupElement.querySelector('.comments-loader').classList.add('visually-hidden');
 
-
-var biggerScale = function () {
+uploadScale.addEventListener('click', function (evt) {
   var currentScale = Number(scaleValue.value.slice(0, -1));
-  currentScale += SCALE_OPTIONS.SCALE_STEP;
-  if (currentScale <= SCALE_OPTIONS.MAX_SCALE) {
-    scaleValue.value = currentScale + '%';
-    imgUploadPreview.style.transform = 'scale(' + currentScale / 100 + ')';
+  var targ = evt.target;
+  if (targ.classList[1] === 'scale__control--smaller' && currentScale > SCALE_OPTIONS.MIN_SCALE) {
+    currentScale -= SCALE_OPTIONS.SCALE_STEP;
+
+  } else if (targ.classList[1] === 'scale__control--bigger' && currentScale < SCALE_OPTIONS.MAX_SCALE) {
+    currentScale += SCALE_OPTIONS.SCALE_STEP;
   }
-};
-
-var smallerScale = function () {
-  var currentScale = Number(scaleValue.value.slice(0, -1));
-  currentScale -= SCALE_OPTIONS.SCALE_STEP;
-  if (currentScale >= SCALE_OPTIONS.MIN_SCALE) {
-    scaleValue.value = currentScale + '%';
-    imgUploadPreview.style.transform = 'scale(' + currentScale / 100 + ')';
-
-  }
-};
-
-scaleBigger.addEventListener('click', biggerScale);
-scaleSmaller.addEventListener('click', smallerScale);
+  scaleValue.value = currentScale + '%';
+  imgUploadPreview.style.transform = 'scale(' + currentScale / 100 + ')';
+});
 
 var enterCloseHandler = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
@@ -182,29 +170,28 @@ var closeUploadOverlay = function () {
 uploadFileElement.addEventListener('change', openUploadOverlay);
 uploadFileCancel.addEventListener('click', closeUploadOverlay);
 
-
 var addEffectLevelClickHandler = function (maxLevel, minLevel, currentLevel) {
   return ((currentLevel * maxLevel) / 100) + minLevel;
 };
 
-effectLevelPin.addEventListener('mouseup', function () {
-  imgUploadPreview.style.filter = '';
+var getEffectStyle = function () {
   if (effectChrome.checked) {
-    imgUploadPreview.style.filter = 'grayscale(' + addEffectLevelClickHandler(1, 0, effectLevelValue.value) + ')';
+    return 'grayscale(' + addEffectLevelClickHandler(1, 0, effectLevelValue.value) + ')';
   }
   if (effectSepia.checked) {
-    imgUploadPreview.style.filter = 'sepia(' + addEffectLevelClickHandler(1, 0, effectLevelValue.value) + ')';
+    return 'sepia(' + addEffectLevelClickHandler(1, 0, effectLevelValue.value) + ')';
   }
   if (effectMarvin.checked) {
-    imgUploadPreview.style.filter = 'invert(' + addEffectLevelClickHandler(100, 0, effectLevelValue.value) + '%)';
+    return 'invert(' + addEffectLevelClickHandler(100, 0, effectLevelValue.value) + '%)';
   }
   if (effectPhobos.checked) {
-    imgUploadPreview.style.filter = 'blur(' + addEffectLevelClickHandler(3, 0, effectLevelValue.value) + 'px)';
+    return 'blur(' + addEffectLevelClickHandler(3, 0, effectLevelValue.value) + 'px)';
   }
   if (effectHeat.checked) {
-    imgUploadPreview.style.filter = 'brightness(' + addEffectLevelClickHandler(3, 1, effectLevelValue.value) + ')';
+    return 'brightness(' + addEffectLevelClickHandler(3, 1, effectLevelValue.value) + ')';
   }
-});
+  return '';
+};
 
 var checkEffectsNone = function () {
   if (effectOriginal.checked) {
@@ -218,7 +205,7 @@ var changeEffect = function (effectName) {
   for (var a = 0; a < effects.length; a++) {
     if (effects[a].checked) {
       imgUploadPreview.className = '';
-      imgUploadPreview.style.filter = '';
+      imgUploadPreview.style.filter = getEffectStyle;
       imgUploadPreview.classList.add('effects__preview--' + effectName);
     }
   }
