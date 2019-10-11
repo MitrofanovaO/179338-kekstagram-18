@@ -260,4 +260,3 @@ hashtagsInput.addEventListener('focus', function () {
 hashtagsInput.addEventListener('blur', function () {
   document.addEventListener('keydown', enterCloseHandler);
 });
-
