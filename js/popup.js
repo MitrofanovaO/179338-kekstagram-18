@@ -7,6 +7,17 @@
   picturePopupElement.querySelector('.social__comment-count').classList.add('visually-hidden');
   picturePopupElement.querySelector('.comments-loader').classList.add('visually-hidden');
 
+  window.createCommentElement = function (options) {
+    var item = document.createElement('li');
+    item.classList.add('social__comment');
+    item.innerHTML = '<img class="social__picture" ' +
+      'src="' + options.avatar + '" ' +
+      'alt="' + options.name + '" ' +
+      'width="35" height="35">' +
+      '<p class="social__text">' + options.message + '</p>';
+    return item;
+  };
+
   var fillPicturePopup = function (picture) {
     var commentsArr = document.querySelector('.social__comments');
     commentsArr.innerHTML = '';

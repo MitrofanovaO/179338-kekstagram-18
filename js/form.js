@@ -29,6 +29,9 @@
   var imageUpload = document.querySelector('.img-upload');
   var textInput = imageUpload.querySelector('.text__description');
 
+  var uploadFileForm = document.querySelector('.img-upload__form');
+  var submitFormButton = uploadFileOverlay.querySelector('.img-upload__submit');
+
   var pinElement = uploadFileOverlay.querySelector('.effect-level__pin');
   var LineElement = uploadFileOverlay.querySelector('.effect-level__line');
   var DepthElement = uploadFileOverlay.querySelector('.effect-level__depth');
@@ -56,28 +59,33 @@
       return elem !== '';
     });
     hashtagsInput.value = hashtags.join(' ');
+    var hashtagsList = [];
 
     for (var i = 0; i < hashtags.length; i++) {
       var firstToken = hashtags[i][0];
-      var inkr = i + 1;
       if (firstToken !== '#') {
-        hashtagsInput.setCustomValidity('Хэштег должен начинаться с #');
-      } else if (hashtags.length > HASHTAGS_OPTIONS.MAX_QAUNTITY) {
-        hashtagsInput.setCustomValidity('Не более 5 хэштегов');
-      } else if (hashtags[i].length > HASHTAGS_OPTIONS.MAX_LENGTH) {
-        hashtagsInput.setCustomValidity('Хэштег не иожет быть длиннее 20 символов, включая решетку');
-      } else if (firstToken === '#' && hashtags[i].length === 1) {
-        hashtagsInput.setCustomValidity('Хэштег не может состоять из одной решетки');
-      } else if (hashtags[i].indexOf('#', 1) !== -1) {
-        hashtagsInput.setCustomValidity('Хэштеги должны разделяться пробелом');
-        break;
-      } else if (hashtags.indexOf(hashtags[i], inkr) !== -1) {
-        hashtagsInput.setCustomValidity('Хэштеги не могут повторяться');
-        break;
-      } else {
-        hashtagsInput.setCustomValidity('');
+        return 'Хэштег должен начинаться с #';
+      }
+      if (hashtags.length > HASHTAGS_OPTIONS.MAX_QAUNTITY) {
+        return 'Не более 5 хэштегов';
+      }
+      if (hashtags[i].length > HASHTAGS_OPTIONS.MAX_LENGTH) {
+        return 'Хэштег не иожет быть длиннее 20 символов, включая решетку';
+      }
+      if (firstToken === '#' && hashtags[i].length === 1) {
+        return 'Хэштег не может состоять из одной решетки';
+      }
+      if (hashtags[i].indexOf('#', 1) !== -1) {
+        return 'Хэштеги должны разделяться пробелом';
+      }
+      if (!hashtagsList.includes(hashtags[i])) {
+        hashtagsList.push(hashtags[i]);
       }
     }
+    if (hashtagsList.length !== hashtags.length) {
+      return 'Хэштеги не могут повторяться';
+    }
+    return '';
   }
 
   hashtagsInput.addEventListener('change', validationHashtags);
@@ -107,6 +115,23 @@
   var closeUploadOverlay = function () {
     uploadFileOverlay.classList.add('hidden');
   };
+
+  var submitForm = function () {
+    var message = validationHashtags();
+
+    if (message) {
+      hashtagsInput.setCustomValidity(message);
+      return;
+    }
+
+    uploadFileForm.submit();
+  };
+
+  var onEnterPressSubmitForm = function () {
+    submitForm();
+  };
+
+  submitFormButton.addEventListener('click', onEnterPressSubmitForm);
 
   uploadFileElement.addEventListener('change', openUploadOverlay);
   uploadFileCancel.addEventListener('click', closeUploadOverlay);
