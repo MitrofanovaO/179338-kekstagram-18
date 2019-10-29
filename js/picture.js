@@ -2,7 +2,9 @@
 
 (function () {
 
-  var fillPhotoElement = function (element, data) {
+  var fillPhotoElement = function (data) {
+    var element = photoTemplate.cloneNode(true);
+
     element.querySelector('.picture__img').src = data.url;
     element.querySelector('.picture__comments').innerText = data.comments.length;
     element.querySelector('.picture__likes').innerText = data.likes;
@@ -15,17 +17,27 @@
     return element;
   };
 
-  var createDocumentFragment = function (template, photoArr) {
-    var docFragment = document.createDocumentFragment();
-    for (var i = 0; i < photoArr.length; i++) {
-      var clone = template.cloneNode(true);
-      docFragment.appendChild(fillPhotoElement(clone, photoArr[i]));
+  var mainSection = document.querySelector('main');
+  var photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var imagesList = document.querySelector('.pictures');
+
+  var successHandler = function (imagesArray) {
+    var fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < imagesArray.length; i++) {
+      fragment.appendChild(fillPhotoElement(imagesArray[i]));
     }
-    return docFragment;
+    imagesList.appendChild(fragment);
   };
 
-  var photoArr = window.createPhotos(window.data.PHOTOS_QUANTITY);
-  var photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
-  document.querySelector('.pictures').appendChild(createDocumentFragment(photoTemplate, photoArr));
+  var errorHandler = function (errorMessage) {
+    var errorTemplateBlock = errorTemplate.cloneNode(true);
+
+    errorTemplateBlock.querySelector('.error__title').textContent = errorMessage;
+    mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
+  };
+
+  window.load('https://js.dump.academy/kekstagram/data', successHandler, errorHandler);
 
 })();
