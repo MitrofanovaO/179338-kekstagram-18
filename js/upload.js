@@ -2,10 +2,9 @@
 
 (function () {
 
-  window.load = function (url, onSuccess, onError) {
+  window.upload = function (url, data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-
     xhr.timeout = 3000;
 
     xhr.addEventListener('load', function () {
@@ -16,6 +15,7 @@
         default: onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
+
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
@@ -23,8 +23,8 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
-    xhr.open('GET', url);
-    xhr.send();
+    xhr.open('POST', url);
+    xhr.send(data);
   };
 
 })();

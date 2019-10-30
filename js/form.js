@@ -30,7 +30,9 @@
   var textInput = imageUpload.querySelector('.text__description');
 
   var uploadFileForm = document.querySelector('.img-upload__form');
-  var submitFormButton = uploadFileOverlay.querySelector('.img-upload__submit');
+  var mainSection = document.querySelector('main');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
 
   var pinElement = uploadFileOverlay.querySelector('.effect-level__pin');
   var LineElement = uploadFileOverlay.querySelector('.effect-level__line');
@@ -40,7 +42,7 @@
   var currentFilter = 'none';
 
   uploadScale.addEventListener('click', function (evt) {
-    var currentScale = Number(scaleValue.value.slice(0, -1));
+    var currentScale = scaleValue.value;
     var targ = evt.target;
     if (targ.classList[1] === 'scale__control--smaller' && currentScale > SCALE_OPTIONS.MIN_SCALE) {
       currentScale -= SCALE_OPTIONS.SCALE_STEP;
@@ -48,7 +50,7 @@
     } else if (targ.classList[1] === 'scale__control--bigger' && currentScale < SCALE_OPTIONS.MAX_SCALE) {
       currentScale += SCALE_OPTIONS.SCALE_STEP;
     }
-    scaleValue.value = currentScale + '%';
+    scaleValue.value = currentScale;
     imgUploadPreview.style.transform = 'scale(' + currentScale / 100 + ')';
   });
 
@@ -116,6 +118,14 @@
     uploadFileOverlay.classList.add('hidden');
   };
 
+  var resetForm = function () {
+    hashtagsInput.value = '';
+    textInput.value = '';
+    effectPreviewPicture[0].checked = true;
+    setFilter('none');
+    setEffectLevel(true);
+  };
+
   var submitForm = function () {
     var message = validationHashtags();
 
@@ -124,14 +134,70 @@
       return;
     }
 
-    uploadFileForm.submit();
+    var formData = new FormData(uploadFileForm);
+
+    var onClosePopup = function (template, button) {
+
+      var closePopup = function () {
+        mainSection.removeChild(template);
+        button.removeEventListener('click', onClose);
+        document.removeEventListener('keydown', onEscClose);
+        document.removeEventListener('click', onCloseClick);
+      };
+
+      var onClose = function () {
+        closePopup();
+      };
+
+      var onEscClose = function (evt) {
+        if (evt.keyCode === window.data.ESC_KEYCODE) {
+          closePopup();
+        }
+      };
+
+      var onCloseClick = function (evt) {
+        if (evt.target === template) {
+          closePopup();
+        }
+      };
+
+      button.addEventListener('click', onClose);
+      document.addEventListener('keydown', onEscClose);
+      document.addEventListener('click', onCloseClick);
+    };
+
+    var onFormError = function (errorMessage) {
+      var errorTemplateBlock = errorTemplate.cloneNode(true);
+
+      uploadFileOverlay.classList.add('hidden');
+      errorTemplateBlock.querySelector('.error__title').textContent = errorMessage;
+      mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
+
+      var errorButton = document.querySelector('.error__button');
+      onClosePopup(errorTemplateBlock, errorButton);
+
+    };
+
+    var onFormSuccess = function () {
+      var successTemplateBlock = successTemplate.cloneNode(true);
+
+      uploadFileOverlay.classList.add('hidden');
+      resetForm();
+      mainSection.insertAdjacentElement('afterbegin', successTemplateBlock);
+
+      var successButton = document.querySelector('.success__button');
+      onClosePopup(successTemplateBlock, successButton);
+    };
+
+    window.upload('https://js.dump.academy/kekstagram', formData, onFormSuccess, onFormError);
+
   };
 
-  var onEnterPressSubmitForm = function () {
+
+  uploadFileForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
     submitForm();
-  };
-
-  submitFormButton.addEventListener('click', onEnterPressSubmitForm);
+  });
 
   uploadFileElement.addEventListener('change', openUploadOverlay);
   uploadFileCancel.addEventListener('click', closeUploadOverlay);
@@ -186,7 +252,11 @@
         break;
     }
     imgUploadPreview.style.filter = value;
+    var setEffectValue = function () {
+      effectLevelValue.setAttribute('value', position * 100);
+    };
 
+    setEffectValue();
     setEffectDepth();
   };
 
