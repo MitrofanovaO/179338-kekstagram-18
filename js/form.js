@@ -42,12 +42,13 @@
   var currentFilter = 'none';
 
   uploadScale.addEventListener('click', function (evt) {
-    var currentScale = scaleValue.value;
+    var currentScale = parseInt(scaleValue.value, 10);
+
     var targ = evt.target;
-    if (targ.classList[1] === 'scale__control--smaller' && currentScale > SCALE_OPTIONS.MIN_SCALE) {
+    if (targ.classList.contains('scale__control--smaller') && currentScale > SCALE_OPTIONS.MIN_SCALE) {
       currentScale -= SCALE_OPTIONS.SCALE_STEP;
 
-    } else if (targ.classList[1] === 'scale__control--bigger' && currentScale < SCALE_OPTIONS.MAX_SCALE) {
+    } else if (targ.classList.contains('scale__control--bigger') && currentScale < SCALE_OPTIONS.MAX_SCALE) {
       currentScale += SCALE_OPTIONS.SCALE_STEP;
     }
     scaleValue.value = currentScale;
@@ -99,14 +100,9 @@
   });
 
   var enterCloseHandler = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE) {
-      if (textInput.matches(':focus')) {
-        return '';
-      } else {
-        closeUploadOverlay();
-      }
+    if (evt.keyCode === window.data.ESC_KEYCODE && !textInput.matches(':focus')) {
+      closeUploadOverlay();
     }
-    return '';
   };
 
   var openUploadOverlay = function () {
@@ -233,25 +229,23 @@
     var setEffectDepth = function () {
       DepthElement.style.width = (position * 100) + '%';
     };
-    var value = '';
-    switch (currentFilter) {
-      case 'chrome':
-        value = 'grayscale(' + position + ')';
-        break;
-      case 'sepia':
-        value = 'sepia(' + position + ')';
-        break;
-      case 'marvin':
-        value = 'invert(' + position * 100 + '%)';
-        break;
-      case 'phobos':
-        value = 'blur(' + position * 3 + 'px)';
-        break;
-      case 'heat':
-        value = 'brightness(' + position * 3 + ')';
-        break;
-    }
-    imgUploadPreview.style.filter = value;
+    var getFilterValue = function () {
+      switch (currentFilter) {
+        case 'chrome':
+          return 'grayscale(' + position + ')';
+        case 'sepia':
+          return 'sepia(' + position + ')';
+        case 'marvin':
+          return 'invert(' + position * 100 + '%)';
+        case 'phobos':
+          return 'blur(' + position * 3 + 'px)';
+        case 'heat':
+          return 'brightness(' + position * 3 + ')';
+      }
+      return '';
+    };
+    imgUploadPreview.style.filter = getFilterValue();
+
     var setEffectValue = function () {
       effectLevelValue.setAttribute('value', position * 100);
     };
@@ -297,8 +291,8 @@
   showPin();
   pinElement.addEventListener('mousedown', onMouseDownEffectLevel);
 
-  for (var i = 0; i < effectPreviewPicture.length; i++) {
-    effectPreviewPicture[i].addEventListener('change', onChangeEffect);
-  }
+  effectPreviewPicture.forEach(function (item) {
+    item.addEventListener('change', onChangeEffect);
+  });
 
 })();

@@ -25,9 +25,10 @@
     var fragment = document.createDocumentFragment();
     var photoSection = document.querySelector('.pictures');
 
-    for (var i = 0; i < imagesArray.length; i++) {
-      fragment.appendChild(window.fillPhotoElement(imagesArray[i]));
-    }
+    imagesArray.forEach(function (item) {
+      fragment.appendChild(window.fillPhotoElement(item));
+    });
+
     photoSection.appendChild(fragment);
   };
 
@@ -39,7 +40,6 @@
     });
 
     window.onSuccessPhoto(window.photo);
-
   };
 
   var errorHandler = function (errorMessage) {
