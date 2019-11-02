@@ -8,14 +8,14 @@
 
   var filterRandomPhoto = function (photos) {
     var randomPictures = window.data.shuffle(photos).slice(0, 10);
-    window.onSuccessPhoto(randomPictures);
+    return randomPictures;
   };
 
   var filterDiscussedPhoto = function (photos) {
     var discussedPictures = photos.slice().sort(function (a, b) {
       return b.likes - a.likes;
     });
-    window.onSuccessPhoto(discussedPictures);
+    return discussedPictures;
   };
 
   var removePhoto = function () {
@@ -37,17 +37,19 @@
           filter.classList.add('img-filters__button--active');
           removePhoto();
 
-          switch (filter.id) {
-            case 'filter-random':
-              filterRandomPhoto(window.photo);
-              break;
-            case 'filter-discussed':
-              filterDiscussedPhoto(window.photo);
-              break;
-            case 'filter-popular':
-              window.onSuccessPhoto(window.photo);
-              break;
-          }
+          var getFilteredPhotos = function () {
+            switch (filter.id) {
+              case 'filter-random':
+                return filterRandomPhoto(window.photo);
+              case 'filter-discussed':
+                return filterDiscussedPhoto(window.photo);
+              case 'filter-popular':
+                return window.photo;
+            }
+            return '';
+          };
+
+          window.onSuccessPhoto(getFilteredPhotos());
         }
       })
   );
