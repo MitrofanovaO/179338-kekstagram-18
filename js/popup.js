@@ -10,7 +10,9 @@
   var pictureDescription = picturePopupElement.querySelector('.social__caption');
   var commentsArr = document.querySelector('.social__comments');
   var commentsLoader = picturePopupElement.querySelector('.comments-loader');
-
+  var commentsCountBlock = picturePopupElement.querySelector('.social__comment-count');
+  var commentsCount = commentsCountBlock.querySelector('.comments-count');
+  var commentsCountShow = commentsCountBlock.querySelector('.comments-count-show');
   picturePopupElement.querySelector('.social__comment-count').classList.add('visually-hidden');
   picturePopupElement.querySelector('.comments-loader').classList.add('visually-hidden');
 
@@ -18,13 +20,16 @@
 
     var commentItem = commentsArr.querySelector('.social__comment');
     var fragment = document.createDocumentFragment();
+    commentsCountShow.textContent = SHOWN_COMMENTS;
 
     picture.comments.forEach(function (item, i) {
       var cloneItem = commentItem.cloneNode(true);
+      commentsCountBlock.classList.remove('visually-hidden');
       if (i >= SHOWN_COMMENTS) {
         cloneItem.classList.add('visually-hidden');
       }
       fragment.appendChild(cloneItem);
+
       var avatar = fragment.children[i].querySelector('.social__picture');
       var text = fragment.children[i].querySelector('.social__text');
 
@@ -34,7 +39,9 @@
 
       if (picture.comments.length <= SHOWN_COMMENTS) {
         commentsLoader.classList.add('visually-hidden');
+        commentsCountBlock.classList.add('visually-hidden');
       } else {
+        commentsCount.textContent = picture.comments.length;
         commentsLoader.classList.remove('visually-hidden');
       }
     });
@@ -59,8 +66,12 @@
       }
       if (i === hideComments.length - 1) {
         commentsLoader.classList.add('visually-hidden');
+        commentsCountBlock.classList.add('visually-hidden');
       }
     });
+    var hiddenComment = commentsArr.querySelectorAll('.visually-hidden');
+    var commentBlockAll = commentsArr.querySelectorAll('.social__comment');
+    commentsCountShow.textContent = commentBlockAll.length - hiddenComment.length;
   });
 
 
