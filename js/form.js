@@ -30,6 +30,7 @@
   var textInput = imageUpload.querySelector('.text__description');
 
   var uploadFileForm = document.querySelector('.img-upload__form');
+
   var mainSection = document.querySelector('main');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
@@ -40,6 +41,12 @@
   var pinWrap = uploadFileOverlay.querySelector('.img-upload__effect-level');
   var effectPreviewPicture = uploadFileOverlay.querySelectorAll('input[name="effect"]');
   var currentFilter = 'none';
+
+  window.form = {
+    uploadFileOverlay: uploadFileOverlay,
+    uploadFileElement: uploadFileElement,
+    imgUploadPreview: imgUploadPreview,
+  };
 
   uploadScale.addEventListener('click', function (evt) {
     var currentScale = parseInt(scaleValue.value, 10);
@@ -63,7 +70,6 @@
     });
     hashtagsInput.value = hashtags.join(' ');
     var hashtagsList = [];
-
     for (var i = 0; i < hashtags.length; i++) {
       var firstToken = hashtags[i][0];
       if (firstToken !== '#') {
@@ -124,9 +130,9 @@
 
   var submitForm = function () {
     var message = validationHashtags();
+    hashtagsInput.setCustomValidity(message);
 
     if (message) {
-      hashtagsInput.setCustomValidity(message);
       return;
     }
 
@@ -185,8 +191,7 @@
       onClosePopup(successTemplateBlock, successButton);
     };
 
-    window.upload('https://js.dump.academy/kekstagram', formData, onFormSuccess, onFormError);
-
+    window.backend.upload(formData, onFormSuccess, onFormError);
   };
 
 

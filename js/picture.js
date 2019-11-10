@@ -51,6 +51,6 @@
     mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
   };
 
-  window.load('https://js.dump.academy/kekstagram/data', successHandler, errorHandler);
+  window.backend.load(successHandler, errorHandler);
 
 })();
