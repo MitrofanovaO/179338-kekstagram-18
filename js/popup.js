@@ -61,8 +61,6 @@
     hideComments.forEach(function (item, i) {
       if (i < SHOWN_COMMENTS) {
         item.classList.remove('visually-hidden');
-      } else {
-        return;
       }
       if (i === hideComments.length - 1) {
         commentsLoader.classList.add('visually-hidden');
