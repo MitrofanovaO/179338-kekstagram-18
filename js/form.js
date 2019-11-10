@@ -42,12 +42,6 @@
   var effectPreviewPicture = uploadFileOverlay.querySelectorAll('input[name="effect"]');
   var currentFilter = 'none';
 
-  window.form = {
-    uploadFileOverlay: uploadFileOverlay,
-    uploadFileElement: uploadFileElement,
-    imgUploadPreview: imgUploadPreview,
-  };
-
   uploadScale.addEventListener('click', function (evt) {
     var currentScale = parseInt(scaleValue.value, 10);
 
@@ -97,7 +91,10 @@
     return '';
   }
 
-  hashtagsInput.addEventListener('change', validationHashtags);
+  hashtagsInput.addEventListener('change', function () {
+    var message = validationHashtags();
+    hashtagsInput.setCustomValidity(message);
+  });
   hashtagsInput.addEventListener('focus', function () {
     document.removeEventListener('keydown', enterCloseHandler);
   });
@@ -299,5 +296,11 @@
   effectPreviewPicture.forEach(function (item) {
     item.addEventListener('change', onChangeEffect);
   });
+
+  window.form = {
+    uploadFileOverlay: uploadFileOverlay,
+    uploadFileElement: uploadFileElement,
+    imgUploadPreview: imgUploadPreview,
+  };
 
 })();
