@@ -2,6 +2,9 @@
 
 (function () {
 
+  var photoSection = document.querySelector('.pictures');
+  var photos = [];
+
   var fillPhotoElement = function (data) {
     var photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
     var element = photoTemplate.cloneNode(true);
@@ -12,10 +15,10 @@
     element.querySelector('.picture__likes').textContent = data.likes;
 
     element.addEventListener('click', function () {
-      window.onClickPictureShow(data);
+      window.popup.onClickPictureShow(data);
     });
     element.addEventListener('keydown', function () {
-      window.onEnterPressPicture(data);
+      window.popup.onEnterPressPicture(data);
     });
     filters.classList.remove('img-filters--inactive');
     return element;
@@ -23,39 +26,41 @@
 
   var renderPhoto = function (imagesArray) {
     var fragment = document.createDocumentFragment();
-    var photoSection = document.querySelector('.pictures');
 
     imagesArray.forEach(function (item) {
       fragment.appendChild(window.picture.fillPhotoElement(item));
     });
 
-    photoSection.appendChild(fragment);
+    window.picture.photoSection.appendChild(fragment);
   };
 
-  var successHandler = function (imagesArray) {
+  var getPhotos = function () {
+    return photos;
+  };
 
-    window.photo = imagesArray.map(function (photo, id) {
-      photo.id = id + 1;
+  var onSuccessLoadPicture = function (imagesArray) {
+    photos = imagesArray.map(function (photo, index) {
+      photo.id = index + 1;
       return photo;
     });
-
-    window.picture.renderPhoto(window.photo);
+    window.picture.renderPhoto(photos);
   };
 
-  var errorHandler = function (errorMessage) {
-    var mainSection = document.querySelector('main');
+  var onErrorLoadPicture = function (errorMessage) {
     var errorTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorTemplateBlock = errorTemplate.cloneNode(true);
 
     errorTemplateBlock.querySelector('.error__title').textContent = errorMessage;
-    mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
+    window.form.mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
   };
 
-  window.backend.load(successHandler, errorHandler);
+  window.backend.load(onSuccessLoadPicture, onErrorLoadPicture);
 
   window.picture = {
+    getPhotos: getPhotos,
     fillPhotoElement: fillPhotoElement,
     renderPhoto: renderPhoto,
+    photoSection: photoSection,
   };
 
 })();

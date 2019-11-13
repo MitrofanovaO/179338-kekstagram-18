@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var effectPreview = window.form.uploadFileOverlay.querySelectorAll('.effects__preview');
 
   window.form.uploadFileElement.addEventListener('change', function () {
@@ -9,7 +8,7 @@
 
     if (file) {
       var fileName = file.name.toLowerCase();
-      var matches = FILE_TYPES.some(function (item) {
+      var matches = window.constants.FILE_TYPES.some(function (item) {
         return fileName.endsWith(item);
       });
 
@@ -17,9 +16,9 @@
         var reader = new FileReader();
 
         var onReaderLoad = function () {
-          window.form.imgUploadPreview.src = reader.result;
+          window.form.imgPreview.src = reader.result;
           effectPreview.forEach(function (preview) {
-            preview.style = 'background-image: url(' + reader.result + ')';
+            preview.style.backgroundImage = 'url(' + reader.result + ')';
           });
         };
 

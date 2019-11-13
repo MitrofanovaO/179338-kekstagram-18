@@ -2,18 +2,23 @@
 
 (function () {
 
-  var HASHTAGS_OPTIONS = {
-    MAX_QAUNTITY: 5,
+  var MIN_BRIGHTNESS = 1;
+  var MAX_BRIGHTNESS = 3;
+  var MAX_VALUE_BLUR = 3;
+  var MAX_VALUE_FOR_DIVIDE = 100;
+
+  var HashtagsOptions = {
+    MAX_QUANTITY: 5,
     MAX_LENGTH: 20,
   };
 
-  var SCALE_OPTIONS = {
+  var ScaleOptions = {
     SCALE_STEP: 25,
     MIN_SCALE: 25,
     MAX_SCALE: 100,
   };
 
-  var COORDINATES = {
+  var Coordinates = {
     MIN: 0,
     MAX: 453
   };
@@ -21,7 +26,7 @@
   var uploadFileElement = document.querySelector('input[id="upload-file"]');
   var uploadScale = document.querySelector('.img-upload__scale');
   var scaleValue = document.querySelector('.scale__control--value');
-  var imgUploadPreview = document.querySelector('.img-upload__preview img');
+  var imgPreview = document.querySelector('.img-upload__preview img');
   var uploadFileOverlay = document.querySelector('.img-upload__overlay');
   var uploadFileCancel = document.querySelector('.img-upload__cancel');
   var effectLevelValue = document.querySelector('.effect-level__value');
@@ -36,8 +41,8 @@
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
 
   var pinElement = uploadFileOverlay.querySelector('.effect-level__pin');
-  var LineElement = uploadFileOverlay.querySelector('.effect-level__line');
-  var DepthElement = uploadFileOverlay.querySelector('.effect-level__depth');
+  var lineElement = uploadFileOverlay.querySelector('.effect-level__line');
+  var depthElement = uploadFileOverlay.querySelector('.effect-level__depth');
   var pinWrap = uploadFileOverlay.querySelector('.img-upload__effect-level');
   var effectPreviewPicture = uploadFileOverlay.querySelectorAll('input[name="effect"]');
   var currentFilter = 'none';
@@ -45,20 +50,20 @@
   uploadScale.addEventListener('click', function (evt) {
     var currentScale = parseInt(scaleValue.value, 10);
 
-    var targ = evt.target;
-    if (targ.classList.contains('scale__control--smaller') && currentScale > SCALE_OPTIONS.MIN_SCALE) {
-      currentScale -= SCALE_OPTIONS.SCALE_STEP;
+    var theTarget = evt.target;
+    if (theTarget.classList.contains('scale__control--smaller') && currentScale > ScaleOptions.MIN_SCALE) {
+      currentScale -= ScaleOptions.SCALE_STEP;
 
-    } else if (targ.classList.contains('scale__control--bigger') && currentScale < SCALE_OPTIONS.MAX_SCALE) {
-      currentScale += SCALE_OPTIONS.SCALE_STEP;
+    } else if (theTarget.classList.contains('scale__control--bigger') && currentScale < ScaleOptions.MAX_SCALE) {
+      currentScale += ScaleOptions.SCALE_STEP;
     }
     scaleValue.value = currentScale;
-    imgUploadPreview.style.transform = 'scale(' + currentScale / 100 + ')';
+    imgPreview.style.transform = 'scale(' + currentScale / MAX_VALUE_FOR_DIVIDE + ')';
   });
 
-  function validationHashtags() {
+  function getValidationHashtags() {
     var hashtags = hashtagsInput.value.split(' ').map(function (elem) {
-      return elem.toLowerCase();
+      return elem;
     }).filter(function (elem) {
       return elem !== '';
     });
@@ -69,10 +74,10 @@
       if (firstToken !== '#') {
         return 'Хэштег должен начинаться с #';
       }
-      if (hashtags.length > HASHTAGS_OPTIONS.MAX_QAUNTITY) {
+      if (hashtags.length > HashtagsOptions.MAX_QUANTITY) {
         return 'Не более 5 хэштегов';
       }
-      if (hashtags[i].length > HASHTAGS_OPTIONS.MAX_LENGTH) {
+      if (hashtags[i].length > HashtagsOptions.MAX_LENGTH) {
         return 'Хэштег не иожет быть длиннее 20 символов, включая решетку';
       }
       if (firstToken === '#' && hashtags[i].length === 1) {
@@ -87,46 +92,61 @@
     }
     if (hashtagsList.length !== hashtags.length) {
       return 'Хэштеги не могут повторяться';
+    } else {
+      markDefaultField(hashtagsInput);
     }
     return '';
   }
+  var markInvalidField = function (element) {
+    element.style.border = '2px red solid';
+  };
+  var markDefaultField = function (element) {
+    element.style.border = '';
+  };
 
   hashtagsInput.addEventListener('change', function () {
-    var message = validationHashtags();
-    hashtagsInput.setCustomValidity(message);
+    hashtagsInput.setCustomValidity(getValidationHashtags());
   });
   hashtagsInput.addEventListener('focus', function () {
-    document.removeEventListener('keydown', enterCloseHandler);
+    document.removeEventListener('keydown', onEnterButtonClick);
   });
   hashtagsInput.addEventListener('blur', function () {
-    document.addEventListener('keydown', enterCloseHandler);
+    document.addEventListener('keydown', onEnterButtonClick);
+  });
+  hashtagsInput.addEventListener('invalid', function () {
+    markInvalidField(hashtagsInput);
   });
 
-  var enterCloseHandler = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE && !textInput.matches(':focus')) {
+  var onEnterButtonClick = function (evt) {
+    if (evt.keyCode === window.constants.ESC_KEYCODE && !textInput.matches(':focus')) {
       closeUploadOverlay();
     }
   };
 
   var openUploadOverlay = function () {
     uploadFileOverlay.classList.remove('hidden');
-    document.addEventListener('keydown', enterCloseHandler);
+    document.addEventListener('keydown', onEnterButtonClick);
   };
 
   var closeUploadOverlay = function () {
+    resetForm();
     uploadFileOverlay.classList.add('hidden');
   };
 
   var resetForm = function () {
+    uploadFileElement.value = '';
     hashtagsInput.value = '';
     textInput.value = '';
+    scaleValue.value = '100';
     effectPreviewPicture[0].checked = true;
+    imgPreview.style.transform = '';
+    markDefaultField(hashtagsInput);
     setFilter('none');
     setEffectLevel(true);
   };
 
   var submitForm = function () {
-    var message = validationHashtags();
+    var message = getValidationHashtags();
     hashtagsInput.setCustomValidity(message);
 
     if (message) {
@@ -135,10 +155,12 @@
 
     var formData = new FormData(uploadFileForm);
 
-    var onClosePopup = function (template, button) {
+    var closeBlockPopup = function (template, button) {
 
       var closePopup = function () {
-        mainSection.removeChild(template);
+        if (template.parentNode) {
+          template.parentNode.removeChild(template);
+        }
         button.removeEventListener('click', onClose);
         document.removeEventListener('keydown', onEscClose);
         document.removeEventListener('click', onCloseClick);
@@ -149,17 +171,17 @@
       };
 
       var onEscClose = function (evt) {
-        if (evt.keyCode === window.data.ESC_KEYCODE) {
+        if (evt.keyCode === window.constants.ESC_KEYCODE) {
           closePopup();
         }
       };
 
       var onCloseClick = function (evt) {
-        if (evt.target === template) {
+        if (evt.target !== template.children) {
           closePopup();
         }
       };
-
+      resetForm();
       button.addEventListener('click', onClose);
       document.addEventListener('keydown', onEscClose);
       document.addEventListener('click', onCloseClick);
@@ -172,20 +194,20 @@
       errorTemplateBlock.querySelector('.error__title').textContent = errorMessage;
       mainSection.insertAdjacentElement('afterbegin', errorTemplateBlock);
 
-      var errorButton = document.querySelector('.error__button');
-      onClosePopup(errorTemplateBlock, errorButton);
-
+      var buttons = document.querySelectorAll('.error__button');
+      buttons.forEach(function (button) {
+        button.addEventListener('click', closeBlockPopup(errorTemplateBlock, button));
+      });
     };
 
     var onFormSuccess = function () {
       var successTemplateBlock = successTemplate.cloneNode(true);
 
       uploadFileOverlay.classList.add('hidden');
-      resetForm();
       mainSection.insertAdjacentElement('afterbegin', successTemplateBlock);
 
       var successButton = document.querySelector('.success__button');
-      onClosePopup(successTemplateBlock, successButton);
+      closeBlockPopup(successTemplateBlock, successButton);
     };
 
     window.backend.upload(formData, onFormSuccess, onFormError);
@@ -202,11 +224,11 @@
 
   // Перемещение пина
 
-  var defaultPin = effectLevelValue.value / 100;
-  var pinProcent = COORDINATES.MAX / 100 * effectLevelValue.value;
+  var defaultPin = effectLevelValue.value / MAX_VALUE_FOR_DIVIDE;
+  var pinProcent = Coordinates.MAX / MAX_VALUE_FOR_DIVIDE * effectLevelValue.value;
 
   var setFilter = function (classFilter) {
-    imgUploadPreview.className = 'effects__preview--' + classFilter;
+    imgPreview.className = 'effects__preview--' + classFilter;
     currentFilter = classFilter;
   };
 
@@ -223,13 +245,13 @@
       position = defaultPin;
       setPinPosition(pinProcent);
     } else {
-      position = pinElement.offsetLeft / LineElement.offsetWidth;
+      position = pinElement.offsetLeft / lineElement.offsetWidth;
     }
 
     showPin();
 
     var setEffectDepth = function () {
-      DepthElement.style.width = (position * 100) + '%';
+      depthElement.style.width = (position * MAX_VALUE_FOR_DIVIDE) + '%';
     };
     var getFilterValue = function () {
       switch (currentFilter) {
@@ -238,18 +260,18 @@
         case 'sepia':
           return 'sepia(' + position + ')';
         case 'marvin':
-          return 'invert(' + position * 100 + '%)';
+          return 'invert(' + position * MAX_VALUE_FOR_DIVIDE + '%)';
         case 'phobos':
-          return 'blur(' + position * 3 + 'px)';
+          return 'blur(' + position * MAX_VALUE_BLUR + 'px)';
         case 'heat':
-          return 'brightness(' + position * 3 + ')';
+          return 'brightness(' + ((MAX_BRIGHTNESS - MIN_BRIGHTNESS) * position + MIN_BRIGHTNESS) + ')';
       }
       return '';
     };
-    imgUploadPreview.style.filter = getFilterValue();
+    imgPreview.style.filter = getFilterValue();
 
     var setEffectValue = function () {
-      effectLevelValue.setAttribute('value', position * 100);
+      effectLevelValue.value = Math.round(position * MAX_VALUE_FOR_DIVIDE);
     };
 
     setEffectValue();
@@ -263,7 +285,7 @@
   };
 
   var setPinPosition = function (newPosition) {
-    if ((newPosition >= COORDINATES.MIN) && (newPosition <= COORDINATES.MAX)) {
+    if ((newPosition >= Coordinates.MIN) && (newPosition <= Coordinates.MAX)) {
       pinElement.style.left = newPosition + 'px';
     }
   };
@@ -300,7 +322,8 @@
   window.form = {
     uploadFileOverlay: uploadFileOverlay,
     uploadFileElement: uploadFileElement,
-    imgUploadPreview: imgUploadPreview,
+    imgPreview: imgPreview,
+    mainSection: mainSection,
   };
 
 })();

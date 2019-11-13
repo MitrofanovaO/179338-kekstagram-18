@@ -12,12 +12,12 @@
       }
       lastTimeout = window.setTimeout(function () {
         cb.apply(null, parameters);
-      }, window.data.DEBOUNCE_INTERVAL);
+      }, window.constants.DEBOUNCE_INTERVAL);
     };
   };
 
-  var shuffle = function (arr) {
-    var newRandomArray = arr.slice();
+  var shuffle = function (photos) {
+    var newRandomArray = photos.slice();
     var currentIndex = newRandomArray.length;
     var temporaryValue;
     var randomIndex;
@@ -30,14 +30,10 @@
       newRandomArray[randomIndex] = temporaryValue;
     }
 
-    return newRandomArray;
+    return newRandomArray.slice(0, 10);
   };
 
   window.data = {
-    ESC_KEYCODE: 27,
-    ENTER_KEYCODE: 13,
-    COMMENTS_QUANTITY: 5,
-    DEBOUNCE_INTERVAL: 500,
     debounce: debounce,
     shuffle: shuffle,
   };
