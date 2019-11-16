@@ -2,6 +2,8 @@
 
 (function () {
 
+  var DEBOUNCE_INTERVAL = 500;
+
   var debounce = function (cb) {
     var lastTimeout = null;
 
@@ -12,12 +14,12 @@
       }
       lastTimeout = window.setTimeout(function () {
         cb.apply(null, parameters);
-      }, window.data.DEBOUNCE_INTERVAL);
+      }, DEBOUNCE_INTERVAL);
     };
   };
 
-  var shuffle = function (arr) {
-    var newRandomArray = arr.slice();
+  var shuffle = function (photos) {
+    var newRandomArray = photos.slice();
     var currentIndex = newRandomArray.length;
     var temporaryValue;
     var randomIndex;
@@ -34,10 +36,6 @@
   };
 
   window.data = {
-    ESC_KEYCODE: 27,
-    ENTER_KEYCODE: 13,
-    COMMENTS_QUANTITY: 5,
-    DEBOUNCE_INTERVAL: 500,
     debounce: debounce,
     shuffle: shuffle,
   };

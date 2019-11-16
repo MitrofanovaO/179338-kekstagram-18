@@ -1,7 +1,10 @@
 'use strict';
 
 (function () {
-  var SHOWN_COMMENTS = 5;
+
+  var COMMENTS_STEP = 5;
+
+  var bodyElement = document.querySelector('body');
   var picturePopupElement = document.querySelector('.big-picture');
   var bigPictureCancel = picturePopupElement.querySelector('.big-picture__cancel');
   var image = picturePopupElement.querySelector('.big-picture__img img');
@@ -18,33 +21,34 @@
 
   var fillPicturePopup = function (picture) {
 
-    var commentItem = commentsArr.querySelector('.social__comment');
+    var template = commentsArr.querySelector('.social__comment');
     var fragment = document.createDocumentFragment();
-    commentsCountShow.textContent = SHOWN_COMMENTS;
+    commentsCountShow.textContent = COMMENTS_STEP;
 
-    picture.comments.forEach(function (item, i) {
-      var cloneItem = commentItem.cloneNode(true);
+    picture.comments.forEach(function (item, index) {
+      var commentsElement = template.cloneNode(true);
       commentsCountBlock.classList.remove('visually-hidden');
-      if (i >= SHOWN_COMMENTS) {
-        cloneItem.classList.add('visually-hidden');
+      if (index >= COMMENTS_STEP) {
+        commentsElement.classList.add('visually-hidden');
       }
-      fragment.appendChild(cloneItem);
+      fragment.appendChild(commentsElement);
 
-      var avatar = fragment.children[i].querySelector('.social__picture');
-      var text = fragment.children[i].querySelector('.social__text');
+      var avatar = fragment.children[index].querySelector('.social__picture');
+      var text = fragment.children[index].querySelector('.social__text');
 
       avatar.src = item.avatar;
       avatar.alt = item.name;
       text.textContent = item.message;
 
-      if (picture.comments.length <= SHOWN_COMMENTS) {
-        commentsLoader.classList.add('visually-hidden');
-        commentsCountBlock.classList.add('visually-hidden');
-      } else {
-        commentsCount.textContent = picture.comments.length;
-        commentsLoader.classList.remove('visually-hidden');
-      }
     });
+
+    if (picture.comments.length <= COMMENTS_STEP) {
+      commentsLoader.classList.add('visually-hidden');
+      commentsCountBlock.classList.add('visually-hidden');
+    } else {
+      commentsCount.textContent = picture.comments.length;
+      commentsLoader.classList.remove('visually-hidden');
+    }
 
     image.src = picture.url;
     pictureLike.textContent = picture.likes;
@@ -53,16 +57,18 @@
 
     commentsArr.innerHTML = '';
     commentsArr.appendChild(fragment);
+    bodyElement.classList.add('modal-open');
 
   };
 
   commentsLoader.addEventListener('click', function () {
     var hideComments = commentsArr.querySelectorAll('.visually-hidden');
-    hideComments.forEach(function (item, i) {
-      if (i < SHOWN_COMMENTS) {
-        item.classList.remove('visually-hidden');
+    hideComments.forEach(function (item, index) {
+      if (index >= COMMENTS_STEP) {
+        return;
       }
-      if (i === hideComments.length - 1) {
+      item.classList.remove('visually-hidden');
+      if (index === hideComments.length - 1) {
         commentsLoader.classList.add('visually-hidden');
         commentsCountBlock.classList.add('visually-hidden');
       }
@@ -73,19 +79,20 @@
   });
 
 
-  window.onEnterPressPicture = function (evt, picture) {
-    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+  var onEnterPressPicture = function (evt, picture) {
+    if (evt.keyCode === window.constants.ENTER_KEYCODE) {
       fillPicturePopup(picture);
     }
   };
 
-  window.onClickPictureShow = function (picture) {
+  var onClickPictureShow = function (picture) {
     picturePopupElement.classList.remove('hidden');
     fillPicturePopup(picture);
   };
 
   var closeBigPicture = function () {
     picturePopupElement.classList.add('hidden');
+    bodyElement.classList.remove('modal-open');
     document.removeEventListener('click', onCloseBigPicture);
   };
 
@@ -94,12 +101,17 @@
   };
 
   var onPressEscBigPicture = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE) {
+    if (evt.keyCode === window.constants.ESC_KEYCODE) {
       closeBigPicture();
     }
   };
 
   bigPictureCancel.addEventListener('click', onCloseBigPicture);
   document.addEventListener('keydown', onPressEscBigPicture);
+
+  window.popup = {
+    onClickPictureShow: onClickPictureShow,
+    onEnterPressPicture: onEnterPressPicture,
+  };
 
 })();

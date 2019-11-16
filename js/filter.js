@@ -2,51 +2,51 @@
 
 (function () {
 
-  var filters = document.querySelector('.img-filters');
-  var allFilters = filters.querySelectorAll('.img-filters__button');
+  var MAX_QUANTITY_PHOTOS = 10;
+
+  var filtersContainer = document.querySelector('.img-filters');
+  var currentActiveFilter = filtersContainer.querySelector('.img-filters__button--active');
 
   var filterRandomPhoto = function (photos) {
-    var randomPictures = window.data.shuffle(photos).slice(0, 10);
+    var randomPictures = window.data.shuffle(photos).slice(0, MAX_QUANTITY_PHOTOS);
     return randomPictures;
   };
 
   var filterDiscussedPhoto = function (photos) {
     var discussedPictures = photos.slice().sort(function (a, b) {
-      return b.likes - a.likes;
+      return b.comments.length - a.comments.length;
     });
     return discussedPictures;
   };
 
   var changeClassButton = function (filter) {
-    allFilters.forEach(function (button) {
-      button.classList.remove('img-filters__button--active');
-    });
-    filter.classList.add('img-filters__button--active');
-  };
 
-  var removePhotos = function () {
-    var photoSection = document.querySelector('.pictures');
-    var photoTemplate = photoSection.querySelectorAll('.picture');
-    photoTemplate.forEach(function (photo) {
-      photo.remove();
-    });
+    if (currentActiveFilter) {
+      currentActiveFilter.classList.remove('img-filters__button--active');
+    }
+
+    filter.classList.add('img-filters__button--active');
+
+    currentActiveFilter = filter;
   };
 
   var getFilteredPhotos = function (filter) {
     switch (filter.id) {
       case 'filter-random':
-        return filterRandomPhoto(window.photo);
+        return filterRandomPhoto(window.picture.getPhotos());
       case 'filter-discussed':
-        return filterDiscussedPhoto(window.photo);
+        return filterDiscussedPhoto(window.picture.getPhotos());
       case 'filter-popular':
-        return window.photo;
+        return window.picture.getPhotos();
     }
-    return '';
+    return [];
   };
 
   var showFilteredPhotos = function (filter) {
-    changeClassButton(filter);
-    removePhotos();
+    if (filter) {
+      changeClassButton(filter);
+    }
+    window.picture.removePhotos();
     window.picture.renderPhoto(getFilteredPhotos(filter));
   };
 
@@ -60,6 +60,6 @@
 
   var onDebouncedFilterClick = window.data.debounce(onFilterClick);
 
-  filters.addEventListener('click', onDebouncedFilterClick);
+  filtersContainer.addEventListener('click', onDebouncedFilterClick);
 
 })();
