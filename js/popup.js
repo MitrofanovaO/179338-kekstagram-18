@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+
+  var COMMENTS_STEP = 5;
+
   var bodyElement = document.querySelector('body');
   var picturePopupElement = document.querySelector('.big-picture');
   var bigPictureCancel = picturePopupElement.querySelector('.big-picture__cancel');
@@ -20,12 +23,12 @@
 
     var template = commentsArr.querySelector('.social__comment');
     var fragment = document.createDocumentFragment();
-    commentsCountShow.textContent = window.constants.COMMENTS_STEP;
+    commentsCountShow.textContent = COMMENTS_STEP;
 
     picture.comments.forEach(function (item, index) {
       var commentsElement = template.cloneNode(true);
       commentsCountBlock.classList.remove('visually-hidden');
-      if (index >= window.constants.COMMENTS_STEP) {
+      if (index >= COMMENTS_STEP) {
         commentsElement.classList.add('visually-hidden');
       }
       fragment.appendChild(commentsElement);
@@ -37,14 +40,15 @@
       avatar.alt = item.name;
       text.textContent = item.message;
 
-      if (picture.comments.length <= window.constants.COMMENTS_STEP) {
-        commentsLoader.classList.add('visually-hidden');
-        commentsCountBlock.classList.add('visually-hidden');
-      } else {
-        commentsCount.textContent = picture.comments.length;
-        commentsLoader.classList.remove('visually-hidden');
-      }
     });
+
+    if (picture.comments.length <= COMMENTS_STEP) {
+      commentsLoader.classList.add('visually-hidden');
+      commentsCountBlock.classList.add('visually-hidden');
+    } else {
+      commentsCount.textContent = picture.comments.length;
+      commentsLoader.classList.remove('visually-hidden');
+    }
 
     image.src = picture.url;
     pictureLike.textContent = picture.likes;
@@ -60,7 +64,7 @@
   commentsLoader.addEventListener('click', function () {
     var hideComments = commentsArr.querySelectorAll('.visually-hidden');
     hideComments.forEach(function (item, index) {
-      if (index >= window.constants.COMMENTS_STEP) {
+      if (index >= COMMENTS_STEP) {
         return;
       }
       item.classList.remove('visually-hidden');

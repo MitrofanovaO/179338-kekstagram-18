@@ -1,21 +1,12 @@
 'use strict';
 
 (function () {
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-  var TIMEOUT = 1000;
-  var SUCCESS_CODE = 200;
+
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
-  var COMMENTS_STEP = 5;
-  var DEBOUNCE_INTERVAL = 500;
 
   window.constants = {
-    DEBOUNCE_INTERVAL: DEBOUNCE_INTERVAL,
-    FILE_TYPES: FILE_TYPES,
-    TIMEOUT: TIMEOUT,
-    SUCCESS_CODE: SUCCESS_CODE,
     ESC_KEYCODE: ESC_KEYCODE,
-    COMMENTS_STEP: COMMENTS_STEP,
     ENTER_KEYCODE: ENTER_KEYCODE,
   };
 })();

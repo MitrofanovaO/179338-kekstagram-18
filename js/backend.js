@@ -2,12 +2,15 @@
 
 (function () {
 
+  var TIMEOUT = 1000;
+  var SUCCESS_CODE = 200;
+
   var createXhr = function (url, method, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === window.constants.SUCCESS_CODE) {
+      if (xhr.status === SUCCESS_CODE) {
         onSuccess(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -18,7 +21,7 @@
       onError('Произошла ошибка соединения');
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + window.constants.TIMEOUT + 'мс');
+      onError('Запрос не успел выполниться за ' + TIMEOUT + 'мс');
     });
 
     xhr.open(method, url);
