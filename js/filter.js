@@ -33,11 +33,11 @@
   var getFilteredPhotos = function (filter) {
     switch (filter.id) {
       case 'filter-random':
-        return filterRandomPhoto(window.picture.getPhotos());
+        return filterRandomPhoto(window.picture.getAll());
       case 'filter-discussed':
-        return filterDiscussedPhoto(window.picture.getPhotos());
+        return filterDiscussedPhoto(window.picture.getAll());
       case 'filter-popular':
-        return window.picture.getPhotos();
+        return window.picture.getAll();
     }
     return [];
   };
@@ -46,8 +46,8 @@
     if (filter) {
       changeClassButton(filter);
     }
-    window.picture.removePhotos();
-    window.picture.renderPhoto(getFilteredPhotos(filter));
+    window.picture.removeAll();
+    window.picture.render(getFilteredPhotos(filter));
   };
 
   var onFilterClick = function (evt) {

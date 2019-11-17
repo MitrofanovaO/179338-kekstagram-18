@@ -2,12 +2,13 @@
 
 (function () {
 
-  var TIMEOUT = 1000;
+  var TIMEOUT = 10000;
   var SUCCESS_CODE = 200;
 
   var createXhr = function (url, method, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
+    xhr.timeout = TIMEOUT;
 
     xhr.addEventListener('load', function () {
       if (xhr.status === SUCCESS_CODE) {

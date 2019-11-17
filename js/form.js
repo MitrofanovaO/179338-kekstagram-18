@@ -23,10 +23,10 @@
     MAX: 453
   };
 
-  var uploadFileElement = document.querySelector('input[id="upload-file"]');
+  var uploadFile = document.querySelector('input[id="upload-file"]');
   var uploadScale = document.querySelector('.img-upload__scale');
   var scaleValue = document.querySelector('.scale__control--value');
-  var imgPreview = document.querySelector('.img-upload__preview img');
+  var imagePreview = document.querySelector('.img-upload__preview img');
   var uploadFileOverlay = document.querySelector('.img-upload__overlay');
   var uploadFileCancel = document.querySelector('.img-upload__cancel');
   var effectLevelValue = document.querySelector('.effect-level__value');
@@ -36,13 +36,13 @@
 
   var uploadFileForm = document.querySelector('.img-upload__form');
 
-  var pinElement = uploadFileOverlay.querySelector('.effect-level__pin');
-  var lineElement = uploadFileOverlay.querySelector('.effect-level__line');
-  var depthElement = uploadFileOverlay.querySelector('.effect-level__depth');
+  var effectPin = uploadFileOverlay.querySelector('.effect-level__pin');
+  var effectLine = uploadFileOverlay.querySelector('.effect-level__line');
+  var effectDepth = uploadFileOverlay.querySelector('.effect-level__depth');
   var pinWrap = uploadFileOverlay.querySelector('.img-upload__effect-level');
   var effectPreviewPicture = uploadFileOverlay.querySelectorAll('input[name="effect"]');
   var currentFilter = 'none';
-  imgPreview.src = '';
+  imagePreview.src = '';
 
   uploadScale.addEventListener('click', function (evt) {
     var currentScale = parseInt(scaleValue.value, 10);
@@ -55,7 +55,7 @@
       currentScale += ScaleOptions.SCALE_STEP;
     }
     scaleValue.value = currentScale;
-    imgPreview.style.transform = 'scale(' + currentScale / MAX_VALUE_FOR_DIVIDE + ')';
+    imagePreview.style.transform = 'scale(' + currentScale / MAX_VALUE_FOR_DIVIDE + ')';
   });
 
   function getHashtagsValidationMessage() {
@@ -140,13 +140,13 @@
   };
 
   var resetForm = function () {
-    uploadFileElement.value = '';
+    uploadFile.value = '';
     hashtagsInput.value = '';
     textInput.value = '';
     scaleValue.value = '100';
     effectPreviewPicture[0].checked = true;
-    imgPreview.style.transform = '';
-    imgPreview.src = '';
+    imagePreview.style.transform = '';
+    imagePreview.src = '';
     markDefaultField(hashtagsInput);
     setFilter('none');
     setEffectLevel(true);
@@ -183,7 +183,7 @@
     submitForm();
   });
 
-  uploadFileElement.addEventListener('change', openUploadOverlay);
+  uploadFile.addEventListener('change', openUploadOverlay);
   uploadFileCancel.addEventListener('click', closeUploadOverlay);
 
   // Перемещение пина
@@ -192,7 +192,7 @@
   var pinProcent = Coordinates.MAX / MAX_VALUE_FOR_DIVIDE * effectLevelValue.value;
 
   var setFilter = function (classFilter) {
-    imgPreview.className = 'effects__preview--' + classFilter;
+    imagePreview.className = 'effects__preview--' + classFilter;
     currentFilter = classFilter;
   };
 
@@ -209,13 +209,13 @@
       position = defaultPin;
       setPinPosition(pinProcent);
     } else {
-      position = pinElement.offsetLeft / lineElement.offsetWidth;
+      position = effectPin.offsetLeft / effectLine.offsetWidth;
     }
 
     showPin();
 
     var setEffectDepth = function () {
-      depthElement.style.width = (position * MAX_VALUE_FOR_DIVIDE) + '%';
+      effectDepth.style.width = (position * MAX_VALUE_FOR_DIVIDE) + '%';
     };
     var getFilterValue = function () {
       switch (currentFilter) {
@@ -232,7 +232,7 @@
       }
       return '';
     };
-    imgPreview.style.filter = getFilterValue();
+    imagePreview.style.filter = getFilterValue();
 
     var setEffectValue = function () {
       effectLevelValue.value = Math.round(position * MAX_VALUE_FOR_DIVIDE);
@@ -250,7 +250,7 @@
 
   var setPinPosition = function (newPosition) {
     if ((newPosition >= Coordinates.MIN) && (newPosition <= Coordinates.MAX)) {
-      pinElement.style.left = newPosition + 'px';
+      effectPin.style.left = newPosition + 'px';
     }
   };
 
@@ -262,7 +262,7 @@
 
       var shiftX = positionX - moveEvt.clientX;
       positionX = moveEvt.clientX;
-      var newPosition = pinElement.offsetLeft - shiftX;
+      var newPosition = effectPin.offsetLeft - shiftX;
       setPinPosition(newPosition);
       setEffectLevel();
     };
@@ -277,7 +277,7 @@
     document.addEventListener('mouseup', onMouseUpEffectLevel);
   };
   showPin();
-  pinElement.addEventListener('mousedown', onMouseDownEffectLevel);
+  effectPin.addEventListener('mousedown', onMouseDownEffectLevel);
 
   effectPreviewPicture.forEach(function (item) {
     item.addEventListener('change', onChangeEffect);
@@ -285,8 +285,8 @@
 
   window.form = {
     uploadFileOverlay: uploadFileOverlay,
-    uploadFileElement: uploadFileElement,
-    imgPreview: imgPreview,
+    uploadFile: uploadFile,
+    imagePreview: imagePreview,
   };
 
 })();

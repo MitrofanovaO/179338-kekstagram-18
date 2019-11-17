@@ -3,30 +3,31 @@
 (function () {
 
   var photoSection = document.querySelector('.pictures');
+  var pictureTemplate = document.querySelector('#picture');
   var photos = [];
 
-  var fillPhotoElement = function (data) {
-    var photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
-    var element = photoTemplate.cloneNode(true);
+  var fillPicture = function (data) {
+    var photoTemplate = pictureTemplate.content.querySelector('.picture');
+    var picture = photoTemplate.cloneNode(true);
     var filters = document.querySelector('.img-filters');
 
-    element.querySelector('.picture__img').src = data.url;
-    element.querySelector('.picture__comments').textContent = data.comments.length;
-    element.querySelector('.picture__likes').textContent = data.likes;
+    picture.querySelector('.picture__img').src = data.url;
+    picture.querySelector('.picture__comments').textContent = data.comments.length;
+    picture.querySelector('.picture__likes').textContent = data.likes;
 
-    element.addEventListener('click', function () {
+    picture.addEventListener('click', function () {
       window.popup.onClickPictureShow(data);
     });
-    element.addEventListener('keydown', function () {
+    picture.addEventListener('keydown', function () {
       window.popup.onEnterPressPicture(data);
     });
     filters.classList.remove('img-filters--inactive');
-    return element;
+    return picture;
   };
 
   var removePhotos = function () {
-    var photoElements = photoSection.querySelectorAll('.picture');
-    photoElements.forEach(function (photo) {
+    var pictures = photoSection.querySelectorAll('.picture');
+    pictures.forEach(function (photo) {
       photo.remove();
     });
   };
@@ -35,10 +36,10 @@
     var fragment = document.createDocumentFragment();
 
     images.forEach(function (item) {
-      fragment.appendChild(window.picture.fillPhotoElement(item));
+      fragment.appendChild(fillPicture(item));
     });
 
-    window.picture.photoSection.appendChild(fragment);
+    photoSection.appendChild(fragment);
   };
 
   var getPhotos = function () {
@@ -50,7 +51,7 @@
       photo.id = index + 1;
       return photo;
     });
-    window.picture.renderPhoto(photos);
+    renderPhoto(photos);
   };
 
   var onErrorLoadPicture = function (errorMessage) {
@@ -60,11 +61,9 @@
   window.backend.load(onSuccessLoadPicture, onErrorLoadPicture);
 
   window.picture = {
-    photoSection: photoSection,
-    getPhotos: getPhotos,
-    fillPhotoElement: fillPhotoElement,
-    renderPhoto: renderPhoto,
-    removePhotos: removePhotos,
+    getAll: getPhotos,
+    render: renderPhoto,
+    removeAll: removePhotos,
   };
 
 })();

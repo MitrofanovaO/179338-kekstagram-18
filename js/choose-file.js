@@ -5,8 +5,8 @@
 
   var effectPreview = window.form.uploadFileOverlay.querySelectorAll('.effects__preview');
 
-  window.form.uploadFileElement.addEventListener('change', function () {
-    var file = window.form.uploadFileElement.files[0];
+  window.form.uploadFile.addEventListener('change', function () {
+    var file = window.form.uploadFile.files[0];
 
     if (!file) {
       return;
@@ -24,7 +24,7 @@
     var reader = new FileReader();
 
     var onReaderLoad = function () {
-      window.form.imgPreview.src = reader.result;
+      window.form.imagePreview.src = reader.result;
       effectPreview.forEach(function (preview) {
         preview.style.backgroundImage = 'url(' + reader.result + ')';
       });
