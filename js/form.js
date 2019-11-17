@@ -124,7 +124,7 @@
   });
 
   var onEnterButtonClick = function (evt) {
-    if (evt.keyCode === window.constants.ESC_KEYCODE && !textInput.matches(':focus')) {
+    if (evt.keyCode === window.Constants.ESC_KEYCODE && !textInput.matches(':focus')) {
       closeUploadOverlay();
     }
   };

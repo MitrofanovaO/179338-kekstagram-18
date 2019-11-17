@@ -29,7 +29,7 @@
     };
 
     var onEscClose = function (evt) {
-      if (evt.keyCode === window.constants.ESC_KEYCODE) {
+      if (evt.keyCode === window.Constants.ESC_KEYCODE) {
         closePopup();
       }
     };

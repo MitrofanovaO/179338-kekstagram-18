@@ -80,7 +80,7 @@
 
 
   var onEnterPressPicture = function (evt, picture) {
-    if (evt.keyCode === window.constants.ENTER_KEYCODE) {
+    if (evt.keyCode === window.Constants.ENTER_KEYCODE) {
       fillPicturePopup(picture);
     }
   };
@@ -101,7 +101,7 @@
   };
 
   var onPressEscBigPicture = function (evt) {
-    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+    if (evt.keyCode === window.Constants.ESC_KEYCODE) {
       closeBigPicture();
     }
   };
